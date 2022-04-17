@@ -27,10 +27,10 @@ export class SearchController {
     }
 
     setSearchBoxEvent() {
-        this.$searchBox.addEventListener('input', (e) => this.searchInputHandler(e))
+        this.$searchBox.addEventListener('keydown', (e) => this.searchKeydownHandler(e))
         this.$searchBox.addEventListener('click', (e) => this.searchClickHandler(e))
         this.$searchBox.addEventListener('focusout', (e) => this.searchFocusoutHandler(e))
-        this.$searchBox.addEventListener('keydown', (e) => this.searchKeydownHandler(e))
+        this.$searchBox.addEventListener('input', (e) => this.searchInputHandler(e))
     }
 
     setPrefixListEvent() {
@@ -104,7 +104,8 @@ export class SearchController {
     }
 
     formSubmitHandler(e) {
-        // e.preventDefault()
+        // submit 시 로컬스토리지에 반영하므로 새로고침
+        //e.preventDefault() 로컬스토리지 반영 전
 
         if(!this.originInputValue || this.originInputValue.length === 0) return
 
@@ -115,16 +116,18 @@ export class SearchController {
     }
 
     searchKeydownHandler(e) {
-        if(e.key === 'ArrowDown' && this.prefixListState) {
+        if(e.key === 'ArrowDown' || e.key === 'ArrowUp') { // 이부분으로 아래 문제 해결
             this.keydownState = true
+        }
+        if(e.isComposing) return
+        // 아래 화살표를 처음 누를 때 인풋이 먼저 발생하면서 prefix 영역이 다시 나온다..keydownState 를 사전에 true 로 바꿔주면서 해결?
+        if(e.key === 'ArrowDown' && this.prefixListState) {
             this.downPrefixList(e)
         }
         else if(e.key === 'ArrowUp' && this.prefixListState) {
-            this.keydownState = true
             this.upPrefixList(e)
         }
         else {
-            this.prefixListIndex = null
             this.keydownState = false
         }
     }
@@ -134,7 +137,6 @@ export class SearchController {
 
         const inputWord = e.target.value
         this.autoComplete(inputWord)
-
         if(inputWord.length === 0) {
             this.removeVisibilityHidden(this.$historyList)
         }
@@ -192,6 +194,7 @@ export class SearchController {
         this.originInputValue = inputWord
         this.addVisibilityHidden(this.$historyList)
         this.prefixListState = false
+        this.prefixListIndex = null
         this.searchPrefixList(inputWord)
     }
 

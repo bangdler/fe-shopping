@@ -35,14 +35,15 @@ export class BannerController {
     }
 
     smallContainerMouseoverHandler(e) {
-        if(e.target.tagName !== 'LI') return
+        if(!e.target.closest(".banner__smallImg-basicBorder")) return
         this.clearInterval()
         this.debounce(this.mouseoverDelayTime)
             .then(() => this.onMouseoverEffect(e))
     }
 
     onMouseoverEffect(e) {
-        const curIndex = Number(e.target.dataset.index)
+        const $smallImg = e.target.closest(".banner__smallImg-basicBorder")
+        const curIndex = Number($smallImg.dataset.index)
         this.bannerIndex = curIndex
         this.changeBanner()
     }
