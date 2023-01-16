@@ -16,6 +16,10 @@ function init() {
     renderBanner()
     const bannerController = new BannerController()
     bannerController.initBannerController()
+
+    const alert = document.createElement('span')
+    alert.innerHTML = "THIS IS A PERSONAL WEB DESIGN PROJECT - IT IS NOT THE OFFICIAL COMPANY WEBSITE"
+    document.body.appendChild(alert)
 }
 
 init();
